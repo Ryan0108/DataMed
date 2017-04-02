@@ -4,6 +4,13 @@
 """""
 https://www.analyticsvidhya.com/blog/2016/07/practical-guide-data-preprocessing-python-scikit-learn/
 """""
+import numpy as np
+import os
+from datetime import datetime 
+import matplotlib.pyplot as plt 
+import pandas as pd
+
+
 def plot_histograms( df , variables , n_rows , n_cols ):
     fig = plt.figure( figsize = ( 16 , 12 ) )
     for i, var_name in enumerate( variables ):
@@ -23,31 +30,27 @@ def plot_categories( df , cat , target , **kwargs ):
     facet.map( sns.barplot , cat , target )
     facet.add_legend()
 
-
-import csv
-import numpy as np
-import sys, os #for transferring datas from php to python
-from sklearn.externals import joblib # load module to save dfed model
-from datetime import datetime
-import matplotlib.pyplot as plt 
-import pandas as pd
-
- 
+root = 'path to folder'
+excel =  "data_rein" 
 #df = pd.read_csv('out.csv')
-df = pd.read_excel(open('data_rein.xlsx','rb'), sheetname='datas')
-#
+df = pd.read_excel(open(root+excel+'.xlsx','rb'), sheetname='datas')
+#Create a folder with result of all descriptive variables
+
+Folder_name=excel+'_description'
+folder_path=root+Folder_name
+if not os.path.exists(folder_path):
+    os.mkdir(folder_path)
+    
 print(df.dtypes)
 print (df.shape)
 print (df.head(0))	
 print (df.describe()) #description af all continuous variables
 describe = df.describe()
-
+describe.to_csv(folder_path+'descriptif.csv')
 
 #generate box plot for all datas
 pd.options.display.mpl_style = 'default'
 df.boxplot()
-
-#df['rein_preleve_d_g'] = df['rein_preleve_d_g'].astype(str).str.split(',')
 
 #object var
 for feature in df.columns: # Loop through all columns in the dataframe
@@ -64,5 +67,4 @@ for feature in df.columns: # Loop through all columns in the dataframe
                print (feature, df[feature].unique())
                print df[feature].value_counts()
                
-#describe.to_csv('descriptif.csv')           
     
