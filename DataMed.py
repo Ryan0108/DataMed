@@ -4,6 +4,7 @@
 """""
 https://www.analyticsvidhya.com/blog/2016/07/practical-guide-data-preprocessing-python-scikit-learn/
 """""
+import re
 import numpy as np
 import os
 from datetime import datetime 
@@ -40,7 +41,10 @@ Folder_name=excel+'_description'
 folder_path=root+Folder_name
 if not os.path.exists(folder_path):
     os.mkdir(folder_path)
-    
+
+#Lower-case all DataFrame column names
+df.columns = map(str.lower, df.columns)    
+
 print(df.dtypes)
 print (df.shape)
 print (df.head(0))	
@@ -52,17 +56,25 @@ describe.to_csv(folder_path+'descriptif.csv')
 pd.options.display.mpl_style = 'default'
 df.boxplot()
 
+replace_y = [r"/s?y?/s", r"/s?yes?/s", r"/s?oui?/s"]
+replace_n = [r"/s?n?/s", r"/s?no?/s", r"/s?non?/s"]
+
 #object var
 for feature in df.columns: # Loop through all columns in the dataframe
     if df[feature].dtype == 'object': # Only apply for columns with categorical strings
          if len(df[feature].unique()) <=6 : #select only objects with a little different var
                df[feature] = df[feature].str.lower()
-               print (feature, df[feature].unique())
-               print df[feature].value_counts()
+               print (feature, df[feature].unique()) #print before transformation
+               df[feature] = df[feature].replace(replace_n, 0, regex=True)
+               df[feature] = df[feature].replace(replace_y, 1, regex=True)
+               if df[feature].unique() == 0 or 1:
+                    print (feature, df[feature].unique()) #print after transformation if applicable
+               #print number of each individual value
+                print df[feature].value_counts()
         
 #binary var
 for feature in df.columns: # Loop through all columns in the dataframe
-    if df[feature].dtype == 'float64': # Only apply for columns with categorical strings
+    if df[feature].dtype == 'float64' or df[feature].dtype == 'float8': # Only apply for columns with categorical strings
          if len(df[feature].unique()) <=6 : #select only objects with a little different var
                print (feature, df[feature].unique())
                print df[feature].value_counts()
