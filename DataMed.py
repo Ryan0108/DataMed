@@ -40,11 +40,12 @@ folder_name=excel+'_description'
 folder_path=root+folder_name
 if not os.path.exists(folder_path):
     os.mkdir(folder_path)
+    os.mkdir(folder_path+'/data')
 
 
 #first check if there is a csv file with df previously exported...
-if os.path.isfile(folder_path+'/'+excel+'.csv') == True:
-    df = pd.read_csv(folder_path+'/'+excel+'.csv', encoding = 'utf8') #sometimes some people would prefer encoding in 'cp1252'
+if os.path.isfile(folder_path+'/data/'+excel+'.csv') == True:
+    df = pd.read_csv(folder_path+'/data/'+excel+'.csv', encoding = 'utf8') #sometimes some people would prefer encoding in 'cp1252'
 else:
     #df = pd.read_csv('out.csv')
     df = pd.read_excel(open(root+excel+'.xlsx','rb'), sheetname='datas')
@@ -97,13 +98,10 @@ describe.to_csv(folder_path+'/descriptif.csv', encoding = 'utf8')
 if 'index' not in df:
     df = df.reset_index()
 #if os.path.isfile(folder_path+'/'+excel+'.csv') == False: ###if you don't want to replace csv file
-df.to_csv(folder_path+'/'+excel+'.csv', index=False, encoding = 'utf8')      
+df.to_csv(folder_path+'/data/'+excel+'.csv', index=False, encoding = 'utf8')      
 
 #if os.path.isfile(folder_path+'/'+excel+'.xlsx') == False: ###if you don't want to replace xls file
-writer = pd.ExcelWriter(folder_path+'/'+excel+'.xlsx', engine = 'xlsxwriter')
+writer = pd.ExcelWriter(folder_path+'/data/'+excel+'.xlsx', engine = 'xlsxwriter')
 df.to_excel(writer, sheet_name = 'sheet1')
 writer.save()
 
-"test"
-
-"test new branch"
