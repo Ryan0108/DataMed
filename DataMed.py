@@ -56,8 +56,8 @@ describe.to_csv(folder_path+'descriptif.csv')
 pd.options.display.mpl_style = 'default'
 df.boxplot()
 
-replace_y = [r"/s?y?/s", r"/s?yes?/s", r"/s?oui?/s"]
-replace_n = [r"/s?n?/s", r"/s?no?/s", r"/s?non?/s"]
+replace_y = [r"\by\b", r"\byes\b", r"\boui\b", r"\bo\b"]
+replace_n = [r"\bn\b", r"\bno\b", r"\bnon\b"]
 
 #object var
 for feature in df.columns: # Loop through all columns in the dataframe
@@ -67,10 +67,11 @@ for feature in df.columns: # Loop through all columns in the dataframe
                print (feature, df[feature].unique()) #print before transformation
                df[feature] = df[feature].replace(replace_n, 0, regex=True)
                df[feature] = df[feature].replace(replace_y, 1, regex=True)
-               if df[feature].unique() == 0 or 1:
+               
+               print any((True for x in [0,1] if x in df[feature].unique()))
                     print (feature, df[feature].unique()) #print after transformation if applicable
                #print number of each individual value
-                print df[feature].value_counts()
+                    print df[feature].value_counts()
         
 #binary var
 for feature in df.columns: # Loop through all columns in the dataframe
