@@ -47,9 +47,9 @@ If you don't know how: place the python script in the same folder as the excel f
 """""
 
 
-root = '/Users/mrouer/médecine/Chirurgie/Vasculaire/Publications/LDN learning curve/' 
-excel =  "data_rein" 
-sheet = "name or list"
+root = 'path/to/file' 
+excel =  "name of excel file" 
+sheet = "name or list of the sheet(s)"
 
 
 ###create a folder with all newly created files 
