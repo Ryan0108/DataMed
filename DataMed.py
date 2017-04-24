@@ -29,9 +29,11 @@ Complete the following informations
 If you don't know how: place the python script in the same folder as the excel file, and set root by nothin ("")
 """""
 
-root = 'path/to/file' 
-excel =  "name of excel file" 
-sheet = "name or list of the sheet(s)"
+
+
+root = 'root_to_folder' 
+excel =  "name_of_excel_file" 
+sheet = "sheet_name"
 
 
 ###create a folder with all newly created files 
@@ -47,7 +49,7 @@ if os.path.isfile(folder_path+'/data/'+excel+'.csv') == True:
     df = pd.read_csv(folder_path+'/data/'+excel+'.csv', encoding = 'utf8') #sometimes some people would prefer encoding in 'cp1252'
 else:
     #df = pd.read_csv('out.csv')
-    df = pd.read_excel(open(root+excel+'.xlsx','rb'), sheetname='datas')
+    df = pd.read_excel(open(root+excel+'.xlsx','rb'), sheetname=sheet)
 
 
 #define groups =>list
@@ -61,9 +63,19 @@ df.columns = [unicodedata.normalize('NFKD', unicode(col)).encode('ASCII', 'ignor
 df.columns = [re.sub(r'[^\w\s]',' ',col) for col in df.columns]
 links = "l d de la le the"
 df.columns = [re.sub(r'\sl\s','_',col) for col in df.columns]
+#replace spaces
+df.columns = [re.sub(r'\s','_',col) for col in df.columns]
 
 #remove empty columns
 df = df.dropna(axis='columns', how='all')
+
+#replace blank values  
+"""""
+http://stackoverflow.com/questions/30392720/pandas-dataframe-replace-blanks-with-nan
+if you want to replace Nan values by another string: df = df.fillna('string')
+http://pandas.pydata.org/pandas-docs/stable/missing_data.html
+"""""
+df.replace(r'\s+( +\.)|#',np.nan,regex=True).replace('',np.nan)
 
 print df.columns
 print(df.dtypes)
@@ -104,7 +116,7 @@ for feature in df.columns: # Loop through all columns in the dataframe
                if len(target_list) >0 :
                    for target in target_list:
                        #write raw numbers
-                       tab = pd.crosstab(index = df[feature], columns = df[t], margins=True)
+                       tab = pd.crosstab(index = df[feature], columns = df[target], margins=True)
                        tab.to_excel(writer_descriptive, sheet_name = 'tabs', startcol = 3, startrow = row)
                        #write in percent
                        tab = pd.crosstab(index = df[feature], columns = df[target], normalize = 'all', margins=True)
