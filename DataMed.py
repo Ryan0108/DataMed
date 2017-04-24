@@ -21,30 +21,14 @@ import xlsxwriter
 #txt processing/remove accents
 import unicodedata
 
-#def remove_accents(data):
-#    return ''.join(x for x in unicodedata.normalize('NFKD', data) if x in string.ascii_letters).lower()
-
-def plot_histograms_continuous( df, variables, n_rows, n_cols ):
-    fig = plt.figure( figsize = ( 16 , 12 ) )
-    for i, var_name in enumerate( variables ):
-        ax=fig.add_subplot( n_rows , n_cols , i+1 )
-        df[ var_name ].hist( bins=10 , ax=ax )
-        ax.set_title( 'Skew: ' + str( round( float( df[ var_name ].skew() ) , ) ) ) # + ' ' + var_name ) #var_name+" Distribution")
-        ax.set_xticklabels( [] , visible=False )
-        ax.set_yticklabels( [] , visible=False )
-    #select min max values for x and y axis
-    xmin, xmax, ymin, ymax = df.min, df.max, 0, 100 #consider Y axis in percentage
-    plt.axis([xmin, xmax, ymin, ymax])
-    fig.tight_layout()  # Improves appearance a bit.
-    plt.show()
-
 """""
 Complete the following informations 
-path to the file
-name of the file
-name of the sheets in the excel file
+-path to the file
+-name of the file
+-name of the sheets in the excel file
 If you don't know how: place the python script in the same folder as the excel file, and set root by nothin ("")
 """""
+
 
 
 root = 'root_to_folder' 
@@ -70,11 +54,6 @@ else:
 
 #define groups =>list
 target_list = ["target"] #change the name according to the grouping column
-#if target_column in df:
-#    df["target"] = df[target_column]
-#    #set target column in N°2 place after index
-#    ####to be done
-
 
 #Lower-case all DataFrame column names
 df.columns = [col.lower() for col in df.columns]
@@ -101,7 +80,7 @@ df.replace(r'\s+( +\.)|#',np.nan,regex=True).replace('',np.nan)
 print df.columns
 print(df.dtypes)
 print (df.shape)
-#print (df.head(0))	
+print (df.head(0))	
 
 
 replace_y = [r"\boui\b", r"\by\b", r"\yes\b"]
@@ -127,10 +106,6 @@ for feature in df.columns: # Loop through all columns in the dataframe
                if all(x in df[feature].unique() for x in [0,1]) == True:
                    print ('success: ', feature, df[feature].unique()) #print after transformation if applicable
                 
-                #print number of each individual value
-#               print df[feature].value_counts()
-#               print ('in percent: ' , df[feature].value_counts(normalize=True))
-               
 #               generate tables with statistics 
                tab = pd.crosstab(index = df[feature], columns = "count")
 #               convert in percents
@@ -158,10 +133,7 @@ for feature in df.columns: # Loop through all columns in the dataframe
                
          #generate tables with statistics 
                tab = pd.crosstab(index = df[feature], columns = "count")
-#               convert in percents
-#               tab = (tab/tab.sum())*100
                tab.to_excel(writer_descriptive, sheet_name = 'tabs', startrow = row)
-#               translate tables downards
                           
                if len(target_list) > 0:
                    for t in target_list:
@@ -201,11 +173,6 @@ Create graph visualization
 
 #binary var
 pd.options.display.mpl_style = 'default'
-#adjust layout size
-#wide = 1
-#length = 1+len((df.select_dtypes(include=[np.float])).columns)/wide
-#df.select_dtypes(include=[np.float]).plot(kind='box', subplots=True, figsize = (length*10,10), layout=(length, wide) )
-#plt.tight_layout()
 
 cols = df.columns.tolist()
 if 'index' in cols:
