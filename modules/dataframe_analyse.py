@@ -42,7 +42,12 @@ class analyseDataFrame:
                     datatype_dict[col_name] = 'single'
                          
             else:
-                datatype_dict[col_name] = 'objec'
+                if (self.df[col_name].nunique()) == 2 : #only 2 values in the col
+                   datatype_dict[col_name] = 'binary'
+                elif 2 < (self.df[col_name].nunique()) <= 6 : #only 2 to 6 values in the col
+                    datatype_dict[col_name] = 'categorical'
+                else:
+                    datatype_dict[col_name] = 'objec'
         
         return datatype_dict
                 
@@ -73,4 +78,4 @@ class analyseDataFrame:
                     continuous.append(col_name)
         return continuous
     
-
+    #####

@@ -30,24 +30,19 @@ class save_data:
     #if not passed as args, it has to be added to to the datatype class
     #which will overload the arguments !!!
     
-    def __init__(self, name, serie, writer, *args):
+    def __init__(self, name, serie, *args):
         self.name = name
         self.serie = serie
         
-        self.writer = writer
+        self.writer = args[0]
         self.workbook = self.writer.book
-        
-        #writer and workbook
-#        for arg in args:
-#            self.arg = arg
-        
-        self.workbook = self.writer.book
+
         #define style
         self.bold = self.workbook.add_format({'bold': True}) #define bold style for all column titles
         self.percent = self.workbook.add_format({'num_format': '0.00%'})
     
 
-    def row_col (self, func, unique_groups = 0 ): #args if for group 
+    def row_col (self, func, unique_groups = 0 ): #define the row number for each function
         global row, row_grouped, col
         
         if func == 'count_values':
@@ -62,10 +57,12 @@ class save_data:
         global row # define row as a global variable to allow it to be modified inside the function and used outside the function
         
     #generate tables with statistics 
+        
         tab_count = pd.crosstab(index = self.serie, columns = "count",  margins=True, )#margins_name='count') 
         tab_percent = pd.crosstab(index = self.serie, columns = 'percent', normalize = 'columns', margins=False)
-    
-        tab = (pd.concat([tab_count, tab_percent], axis=1))
+       
+        tab = (pd.concat([tab_count, tab_percent], axis=1, join="inner"))
+
         tab.to_excel(self.writer, sheet_name = 'tables', startrow = row) 
 
         #convert in percents
@@ -73,8 +70,11 @@ class save_data:
 #        tab = pd.crosstab(index = self.serie, columns = '%', normalize = 'columns', margins=False)
 #        tab.to_excel(self.writer, startcol = 3, sheet_name = 'tabs', startrow = self.row)
         save_data(self.name, self.serie, self.writer).row_col('count_values')
+        
+        ####WARNING#######
+        #Add crosstab withouth missing values !!!+++++
                                            
-    def count_values_groupes(self, group, data):
+    def count_values_groupes(self, group):
         global row, row_grouped # define row as a global variable to allow it to be modified inside the function and used outside the function
         #if the column is the choosen group, then it won't be analyzed in the grouped analysis, then down rows
         if group.name == self.name:
@@ -111,7 +111,7 @@ class save_data:
             save_data(self.name, self.serie, self.writer).row_col('count_values_groupes', unique_groups)
 
            
-    def continuous_values_groupes(self, group, data):
+    def continuous_values_groupes(self, group):
         global row, row_grouped 
             
         if group.name is not self.name: #don't include the chosen group columns, otherwise it throws an error
@@ -127,6 +127,24 @@ class save_data:
            table.to_excel(self.writer, sheet_name = 'tables', startrow = row+1)   
 
            save_data(self.name, self.serie, self.writer).row_col('continuous_values_groupes')
+           
+    def document_style(self):
+        
+        # Auto adjust width of each column #
+        
+        #####set properties for first row and first column
+        #http://stackoverflow.com/questions/34757703/how-to-get-the-longest-length-string-integer-float-from-a-pandas-column-when-the/34757855#34757855
 
-                                                                
+        for i, j in enumerate (df.columns):
+            #1/ get the max length of the describe series
+            field_length = describe[j].astype(str).map(len)
+            max_length = describe.loc[field_length.argmax(), j]   
+            #combine title len and max length of the series, get the highest value to define the column width
+            max_larg = [len(str(max_length)), len(j)]
+            
+            worksheet_descriptif.set_column(i+1,i+1, max(max_larg), None)
+            
+            #####2/Row titles
+            worksheet_descriptif.set_column(0,0, 20, bold_title)
+
 
